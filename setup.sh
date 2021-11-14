@@ -22,8 +22,7 @@ function root_post() {
 	# Steps to run as root after main
 	#dummy homepage
 	
-	echo "<html><body><div>Hello, world\!</div></body></html>" > index.html
-	sudo mv index.html > /var/www/html/index.html
+	echo "<html><body><div>Hello, world\!</div></body></html>" > /var/www/html/index.html
 	
 		
 	logger -s "Enable httpd"
