@@ -9,7 +9,7 @@ function main() {
 	sudo yum install mod_wsgi -y 
 	
 	logger -s "Add mod_wsgi.so to the Apache config"
-	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf/httpd.conf
+	sudo /usr/bin/bash echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf/httpd.conf
 	
 	# System Manager - But you need a whole pile of policy crap - not bothering for now
 	# https://docs.aws.amazon.com/systems-manager/latest/userguide/systems-manager-ug.pdf#systems-manager-quick-setup
@@ -36,12 +36,13 @@ function main() {
 
 	
 	#dummy homepage
-    echo "<html><body><div>Hello, world!</div></body></html>" > /var/www/html/index.html
+    sudo /usr/bin/bash echo "<html><body><div>Hello, world!</div></body></html>" > /var/www/html/index.html
 	
 		
 	logger -s "Enable httpd"
     sudo systemctl enable httpd
-    logger -s "Start https"	
+	
+    logger -s "Start httpd"	
     sudo systemctl start httpd 
 }
 
