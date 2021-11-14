@@ -2,13 +2,13 @@
 
 
 function main() {
-    echo "Installing Apache"
-    sudo yum install httpd -y 
-    echo "Installing mod_wsgi"	
+	logger -s "Installing Apache"
+	sudo yum install httpd -y 
+	
+	logger -s "Installing mod_wsgi"
 	sudo yum install mod_wsgi -y 
 	
-
-	echo " Add mod_wsgi.so to the Apache config"
+	logger -s "Add mod_wsgi.so to the Apache config"
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf/httpd.conf
 	
 	# System Manager - But you need a whole pile of policy crap - not bothering for now
@@ -20,18 +20,29 @@ function main() {
 
 	
 	# get CTFd
-	echo "Get CTFd"
-	export APPDIR=/home/ec2-user/app           
-	mkdir -p ${APPDIR}                        
-	git clone https://github.com/CTFd/CTFd.git 
+
+	export APPDIR=${HOME}/app      
+    export TARGET="https://github.com/CTFd/CTFd.git"
+	mkdir -p ${APPDIR}  
+    cd ${APPDIR}	
+	logger -s "Clone CTFd from ${TARGET}, save into ${APPDIR}"
+	git clone $TARGET
 	
 	# Create a random key
-	cd CTFd                                    
+	cd CTFd   
+    logger -s "pwd=`pwd`"
+    logger -s "Create .ctfd_secret_key"	
 	head -c 64 /dev/urandom > .ctfd_secret_key 
+
 	
-    #sudo systemctl enable httpd >> $${LOG}
-    #sudo systemctl start httpd >> $${LOG}
-    #echo "<html><body><div>Hello, world!</div></body></html>" > /var/www/html/index.html
+	#dummy homepage
+    echo "<html><body><div>Hello, world!</div></body></html>" > /var/www/html/index.html
+	
+		
+	logger -s "Enable httpd"
+    sudo systemctl enable httpd
+    logger -s "Start https"	
+    sudo systemctl start httpd 
 }
 
 main 
