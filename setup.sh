@@ -1,6 +1,5 @@
 #!/usr/bin/bash
 
-LOG=/home/ec2-user/phase2.log
 
 function main() {
     sudo yum install httpd -y                  
@@ -33,4 +32,4 @@ function main() {
     #echo "<html><body><div>Hello, world!</div></body></html>" > /var/www/html/index.html
 }
 
-main 2>&1 > ${LOG}
+main 
