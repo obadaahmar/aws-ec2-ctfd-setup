@@ -2,11 +2,13 @@
 
 
 function main() {
-    sudo yum install httpd -y                  
+    echo "Installing Apache"
+    sudo yum install httpd -y 
+    echo "Installing mod_wsgi"	
 	sudo yum install mod_wsgi -y 
 	
 
-	# Add mod_wsgi.so to the Apache config
+	echo " Add mod_wsgi.so to the Apache config"
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf/httpd.conf
 	
 	# System Manager - But you need a whole pile of policy crap - not bothering for now
@@ -18,7 +20,7 @@ function main() {
 
 	
 	# get CTFd
-	
+	echo "Get CTFd"
 	export APPDIR=/home/ec2-user/app           
 	mkdir -p ${APPDIR}                        
 	git clone https://github.com/CTFd/CTFd.git 
