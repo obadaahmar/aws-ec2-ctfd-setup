@@ -14,15 +14,20 @@ function root_pre() {
 	sudo yum install python3-mod_wsgi -y
 
 
-	# Git is already installed, else how did we get here?
-	# sudo yum install git -y
+	# Git is already installed, else how did we get here? Well, just in case...
+	sudo yum install git -y
 
+    # Apache needs to load mod_wsgi.so in order to run python wsgi
 	logger -s "Add mod_wsgi.so to the Apache config"
-
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf.d/wsgi.conf
 	
+	# we want to use mariadb10.5 so we need to enable it
+	# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-install-extras-library-software/
+	amazon-linux-extras enable mariadb10.5
+	yum clean metadata
+	
 	logger -s "Installing mysql (mariadb)"
-	sudo yum install mysql-server -y
+	sudo yum install mariadb -y
 	sudo systemctl enable mariadb
     sudo systemctl start mariadb
 	
@@ -145,8 +150,8 @@ EOF
 	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
 	
 	logger -s "Initialise the DB"
-	
 	python3 manage.py db upgrade
+	
 }
 
 SVC=${2:-ctfd}
