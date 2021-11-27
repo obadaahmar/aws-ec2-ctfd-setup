@@ -57,11 +57,11 @@ function root_post() {
 <VirtualHost *:80>
     ServerName ctfd.wonkie.cloud
     ServerAlias www.myserver.com
-    DocumentRoot /home/ctfd/app/CTFd
+    DocumentRoot /home/${SVC}/app/CTFd
 
 
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
-    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=5
+    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=5 home=/home/${SVC}/app/CTFd
     WSGIProcessGroup ${SVC}
 
 
@@ -69,27 +69,18 @@ function root_post() {
     CustomLog ${APACHE_LOG_DIR}/access_log combined
 
 
-    #Alias /static/ /var/www/FLASKAPPS/helloworldapp/static
-    <Directory /home/ctfd/app>
+    <Directory /home/${SVC}/app>
         Order allow,deny
         Allow from all
 		Options Indexes MultiViews
         AllowOverride None
         Require all granted
-
     </Directory>
 
 </VirtualHost>
 
 EOF
 
-
-	#cd /var/www/html/
-	#ln -s /home/ctfd/app/ctfd/ /var/www/html/CTFd/CTFd
-    #ln -s /home/ctfd/app/CTFd/CTFd /var/www/html/CTFd
-    
-	# Install flask
-    #sudo pip3 install flask
 	
 	logger -s "Enable httpd as a service"
 	sudo systemctl enable httpd
