@@ -144,6 +144,9 @@ EOF
 	# Replace the Database String
 	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
 	
+	logger -s "Initialise the DB"
+	
+	python3 manage.py db upgrade
 }
 
 SVC=${2:-ctfd}
