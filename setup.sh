@@ -24,8 +24,8 @@ function root_pre() {
 	# we want to use mariadb10.5 so we need to enable it
 	# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-install-extras-library-software/
 	# sudo yum install -y amazon-linux-extras
-	amazon-linux-extras enable mariadb10.5
-	yum clean metadata
+	sudo amazon-linux-extras enable mariadb10.5
+	sudo yum clean metadata
 	
 	logger -s "Installing mysql (mariadb)"
 	sudo yum install mariadb -y
@@ -51,9 +51,13 @@ y
 y
 EOF
 
-    
-
-
+    logger -s "Install redis"
+    sudo amazon-linux-extras enable redis6
+    sudo yum clean metadata
+	sudo yum install redis -y
+	
+	# Need to provide a config
+    # TODO: /etc/redis/redis.conf
 }
 
 function root_post() {
@@ -101,6 +105,12 @@ EOF
 
 	logger -s "Start httpd service"
 	sudo systemctl start httpd
+	
+	logger -s "Enable redis as a service"
+	sudo systemctl enable redis
+	
+	logger -s "Start redis service"
+    sudo systemctl start redis
 }
 
 
@@ -153,6 +163,10 @@ EOF
 	logger -s "Update the CTFd config file $CONFIG: configure DB"
 	# Replace the Database String
 	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
+	
+	logger -s "Update the CTFd config file $CONFIG: configure REDIS"
+	# Replace the Database String
+	sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
 	
 	logger -s "Initialise the DB"
 	python3 manage.py db upgrade
