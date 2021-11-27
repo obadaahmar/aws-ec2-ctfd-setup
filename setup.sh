@@ -11,7 +11,7 @@ function root_pre() {
 
 	logger -s "Installing mod_wsgi"
 	#sudo yum install mod_wsgi -y
-	sudo yum install python3-mod_wsgi
+	sudo yum install python3-mod_wsgi -y
 
 
 	# Git is already installed, else how did we get here?
