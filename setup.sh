@@ -126,7 +126,7 @@ EOF
 
 }
 
-$SVC=${2:-ctfd}
+SVC=${2:-ctfd}
 logger -s "setup.sh: $1 $2 (SVC=${SVC})"
 case $1 in
 	"pre"*)
