@@ -119,7 +119,7 @@ function main() {
 	logger -s "Randomise a key"
 	cd CTFd
 	logger -s "pwd=`pwd`"
-	logger -s "Create .ctfd_secret_key"
+	logger -s "Create .ctfd_secret_key in `pwd`"
 	head -c 64 /dev/urandom > .ctfd_secret_key
     
 	logger -s "Update python modules used by CTFd"
