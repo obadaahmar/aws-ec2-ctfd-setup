@@ -4,7 +4,7 @@
 
 
 function root_pre() {
-    USER=${1}
+    SVC=${1}
 	# Steps to run as root prior to main
 	logger -s "Installing Apache"
 	sudo yum install httpd -y
@@ -27,7 +27,7 @@ function root_pre() {
 
 function root_post() {
 
-    USER=${1}
+    SVC=${1}
 	# Steps to run as root after main
 	#dummy homepage
 	APACHE_LOG_DIR=/var/log/httpd
@@ -43,9 +43,9 @@ function root_post() {
     DocumentRoot /home/ctfd/app/CTFd
 
 
-    WSGIScriptAlias / /home/${USER}/app/ctf.wsgi
-    WSGIDaemonProcess ${USER} user=${USER} group=${USER} threads=5
-    WSGIProcessGroup ${USER}
+    WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
+    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=5
+    WSGIProcessGroup ${SVC}
 
 
     ErrorLog ${APACHE_LOG_DIR}/error_log
@@ -83,7 +83,7 @@ EOF
 
 
 function main() {
-    USER=${1}
+    SVC=${1}
     # permit Apache to read from Service Account when running as root
 	logger -s "Ensure httpd can read from Service Account"
 	chmod og+rx ${HOME}
@@ -126,17 +126,17 @@ EOF
 
 }
 
-$USER=${2:=ctfd}
-logger -s "setup.sh: $1 $2"
+$SVC=${2:=ctfd}
+logger -s "setup.sh: $1 $2 (SVC=${SVC})"
 case $1 in
 	"pre"*)
-		root_pre $USER
+		root_pre $SVC
 		;;
 	"post"*)
-		root_post $USER
+		root_post $SVC
 		;;
 	"main"*)
-		main $USER
+		main $SVC
 		;;
 	*)
 		main
