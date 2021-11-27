@@ -141,10 +141,11 @@ application = create_app()
 
 EOF
 
-
+    logger -s "Update the CTFd config file"
     # Update the config file
 	CONFIG=${APPDIR}/CTFd/CTFd/config.ini
 	
+	logger -s "Update the CTFd config file $CONFIG: configure DB"
 	# Replace the Database String
 	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
 	
