@@ -22,11 +22,15 @@ function root_pre() {
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf.d/wsgi.conf
 	
 	logger -s "Installing mysql (mariadb)"
-	#sudo yum install mysql -y
-	sudo yum -y install mariadb-server
+	sudo yum install mysql-server -y
 	sudo systemctl enable mariadb
     sudo systemctl start mariadb
-    logger -s "Setup and secure MariaDB"
+	
+	echo "mysql version: `mysql --version`"
+	#sudo yum -y install mariadb-server
+	#sudo systemctl enable mariadb
+    #sudo systemctl start mariadb
+    logger -s "Setup and secure Mysql/MariaDB"
     sudo mysql_secure_installation <<EOF
 
 y
