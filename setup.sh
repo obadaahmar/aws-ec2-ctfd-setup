@@ -23,6 +23,7 @@ function root_pre() {
 	
 	# we want to use mariadb10.5 so we need to enable it
 	# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-install-extras-library-software/
+	# sudo yum install -y amazon-linux-extras
 	amazon-linux-extras enable mariadb10.5
 	yum clean metadata
 	
@@ -36,8 +37,11 @@ function root_pre() {
 	#sudo systemctl enable mariadb
     #sudo systemctl start mariadb
     logger -s "Setup and secure Mysql/MariaDB"
+	
+	#NB: MariaDB 10 has an extra Yes needed before the password change (remove one if you're using v5.5)
     sudo mysql_secure_installation <<EOF
 
+y
 y
 secret$SVC
 secret$SVC
@@ -47,6 +51,7 @@ y
 y
 EOF
 
+    
 
 
 }
