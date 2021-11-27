@@ -21,8 +21,25 @@ function root_pre() {
 
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf.d/wsgi.conf
 	
-	logger -s "Installing mysql"
-	sudo yum install mysql -y
+	logger -s "Installing mysql (mariadb)"
+	#sudo yum install mysql -y
+	sudo yum -y install mariadb-server
+	sudo systemctl enable mariadb
+    sudo systemctl start mariadb
+    logger -s "Setup and secure MariaDB"
+    sudo mysql_secure_installation <<EOF
+
+y
+secret$SVC
+secret$SVC
+y
+y
+y
+y
+EOF
+
+
+
 }
 
 function root_post() {
@@ -124,6 +141,13 @@ application = create_app()
 
 EOF
 
+
+    # Update the config file
+	CONFIG=${APPDIR}/CTFd/CTFd/config.ini
+	
+	# Replace the Database String
+	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
+	
 }
 
 SVC=${2:-ctfd}
