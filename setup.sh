@@ -13,7 +13,9 @@ function root_pre() {
     SVC=${1}
 	headline_logger -s "Start ${0} installation as `whoami`"
 
-	
+	# Git is already installed, else how did we get here? Well, just in case...
+	headline_logger -s "Installing git"
+	sudo yum install git -y
 	
 	# Steps to run as root prior to main
 	headline_logger -s "Installing Apache"
@@ -21,15 +23,15 @@ function root_pre() {
 	
 	
 	#headline_logger -s "Installing mod_wsgi"
-	#sudo yum install mod_wsgi -y           # No good, this is for python 2
-	#sudo yum install python3-mod_wsgi -y   # No good, this is mod_wsgi v 3.4, we want 4.x
+	#sudo yum install mod_wsgi -y                  # No good, this is for python 2
+	#sudo yum install python3-mod_wsgi -y          # No good, this is mod_wsgi v 3.4, we want 4.x
 
 	# Do it the hard way: https://pypi.org/project/mod-wsgi/
 	headline_logger -s "Installing Developer Tools"
-	sudo yum groupinstall "Development Tools" -y
+	sudo yum groupinstall "Development Tools" -y   # We need gcc etc ...
 	
-	#headline_logger -s "Installing Apache Devel"
-	#sudo yum install httpd-devel -y         # so, we need httpd-devel
+	headline_logger -s "Installing Apache Devel"   # We'll ned axps (Apache Extension Tool) etc ...
+	sudo yum install httpd-devel -y                # so, we need httpd-devel
 	
 	headline_logger -s "Installing mod wsgi 4.x"
 	curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
@@ -38,12 +40,10 @@ function root_pre() {
 	./configure
 	make
 	make install
-	# python setup.py install
 
 
-	# Git is already installed, else how did we get here? Well, just in case...
-	headline_logger -s "Installing git"
-	sudo yum install git -y
+
+
 
     # Apache needs to load mod_wsgi.so in order to run python wsgi
 	logger -s "Add mod_wsgi.so to the Apache config"
