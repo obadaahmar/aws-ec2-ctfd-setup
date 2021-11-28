@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-# Wrapper for logger to provide some
+# Wrapper for logger to provide some highlight
 function headling_logger () {
   MSG=$2
   echo "******************************************************************************************"
@@ -8,7 +8,7 @@ function headling_logger () {
   echo "******************************************************************************************"
 }
 
-
+# Root commands - pre service account, fetch packages, configure DB & Caching Server
 function root_pre() {
     SVC=${1}
 	headline_logger -s "Start ${0} installation as `whoami`"
@@ -89,6 +89,7 @@ EOF
     sudo systemctl start redis
 }
 
+# Root commands - post service account, configure and start apache
 function root_post() {
     SVC=${1}
 	headline_logger -s "Start ${0} installation as `whoami`"
@@ -137,7 +138,7 @@ EOF
 
 }
 
-
+# SVC commands - run as unpriv user, install main application
 function main() {
     headline_logger -s "Start ${0} installation as `whoami`"
     SVC=${1}
