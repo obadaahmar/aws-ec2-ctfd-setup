@@ -33,9 +33,6 @@ function root_pre() {
     sudo systemctl start mariadb
 	
 	echo "mysql version: `mysql --version`"
-	#sudo yum -y install mariadb-server
-	#sudo systemctl enable mariadb
-    #sudo systemctl start mariadb
     logger -s "Setup and secure Mysql/MariaDB"
 	
 	#NB: MariaDB 10 has an extra Yes needed before the password change (remove one if you're using v5.5)
@@ -56,8 +53,27 @@ EOF
     sudo yum clean metadata
 	sudo yum install redis -y
 	
+	CONFIG=/etc/redis/redis.conf
 	# Need to provide a config
     # TODO: /etc/redis/redis.conf
+	# https://raw.githubusercontent.com/redis/redis/6.2/redis.conf
+	# 
+	# Default config is 
+	#   bind 127.0.0.1 -::1
+	#   protected-mode yes
+	#   port 6379
+	# We'll use an ACL file to specify users
+	
+	logger -s "Update the Redis config file $CONFIG: configure REDIS to use ACL file"
+	# Uncomment the aclfile entry
+	sed -i "s|# aclfile /etc/redis/users.acl|aclfile /etc/redis/users.acl|g" $CONFIG
+	# Genreate a redis.acl file, include use ctfd, permission for all, password as defined
+	cat <<EOF > /etc/redis/users.aclfile
+
+user ctfd on +@all -DEBUG ~* >secret$SVC
+EOF
+
+
 }
 
 function root_post() {
@@ -98,7 +114,11 @@ function root_post() {
 </VirtualHost>
 
 EOF
-
+	logger -s "Enable redis as a service"
+	sudo systemctl enable redis
+	
+	logger -s "Start redis service"
+    sudo systemctl start redis
 	
 	logger -s "Enable httpd as a service"
 	sudo systemctl enable httpd
@@ -106,11 +126,7 @@ EOF
 	logger -s "Start httpd service"
 	sudo systemctl start httpd
 	
-	logger -s "Enable redis as a service"
-	sudo systemctl enable redis
-	
-	logger -s "Start redis service"
-    sudo systemctl start redis
+
 }
 
 
