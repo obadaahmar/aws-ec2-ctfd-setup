@@ -18,8 +18,7 @@ function root_pre() {
 	# Steps to run as root prior to main
 	headline_logger -s "Installing Apache"
 	sudo yum install httpd -y
-	sudo yum install httpd-devel -y
-
+	
 	headline_logger -s "Installing mod_wsgi"
 	#sudo yum install mod_wsgi -y           # No good, this is for python 2
 	#sudo yum install python3-mod_wsgi -y   # No good, this is mod_wsgi v 3.4, we want 4.x
