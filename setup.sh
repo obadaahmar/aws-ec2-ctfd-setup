@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 # Wrapper for logger to provide some highlight
-function headling_logger () {
+function headline_logger () {
   MSG=$2
   echo "******************************************************************************************"
   /bin/logger -s ${2}
@@ -68,7 +68,7 @@ EOF
 	
 	CONFIG=/etc/redis/redis.conf
 	# Need to provide a config
-    #  /etc/redis/redis.conf
+	#  /etc/redis/redis.conf
 	# https://raw.githubusercontent.com/redis/redis/6.2/redis.conf
 	# 
 	# Default config is 
@@ -111,7 +111,7 @@ function root_post() {
 
 
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
-    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=50 home=/home/${SVC}/app/CTFd
+    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=10 home=/home/${SVC}/app/CTFd
     WSGIProcessGroup ${SVC}
 
 
@@ -187,13 +187,21 @@ EOF
     # Update the config file
 	CONFIG=${APPDIR}/CTFd/CTFd/config.ini
 	
+	# Define the Database String	
 	logger -s "Update the CTFd config file $CONFIG: configure DB"
-	# Replace the Database String
 	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
 	
+	# Define the Cache Server String	
 	logger -s "Update the CTFd config file $CONFIG: configure REDIS"
-	# Replace the Database String
 	sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
+	
+	# Define the Application root	
+	# APPLICATION_ROOT = /home/ctfd/app/CTFd
+	logger -s "Update the CTFd config file $CONFIG: configure APPLICATION_ROOT"
+	sed -i "s|# APPLICATION_ROOT =|# APPLICATION_ROOT = / |g" $CONFIG
+	
+
+	
 	
 	logger -s "Initialise the DB"
 	python3 manage.py db upgrade
