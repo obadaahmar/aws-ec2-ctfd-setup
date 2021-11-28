@@ -39,7 +39,7 @@ function root_pre() {
 	
 	headline_logger -s "Installing Apache Devel"   # We'll need axps (Apache Extension Tool) etc ...
 	sudo yum install httpd-devel -y                # so, we need httpd-devel
-	
+	headline_logger -s "Installing Python Devel"
 	sudo yum install python3-devel.x86_64 -y       # and python-devel 
 	
 	headline_logger -s "Installing mod wsgi 4.x"
@@ -183,10 +183,10 @@ EOF
   
     # Shouldn't leave ggc & dev tools lying around
 	headline_logger -s "Uninstalling Developer Tools"
-	sudo yum groupuninstall "Development Tools" -y   # We need gcc etc ...
+	sudo yum erase "Development Tools" -y   
 	
-	headline_logger -s "Uninstalling Apache Devel"   # We'll need axps (Apache Extension Tool) etc ...
-	sudo yum uninstall httpd-devel -y                # so, we need httpd-devel
+	headline_logger -s "Uninstalling Apache Devel"   
+	sudo yum erase httpd-devel -y                
 	
 }
 
@@ -248,8 +248,8 @@ EOF
 	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
 	
 	# Define the Cache Server String	
-#	logger -s "Update the CTFd config file $CONFIG: configure REDIS"
-#	sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
+	logger -s "Update the CTFd config file $CONFIG: configure REDIS"
+	sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
 	
 	# Define the Application root	
 	# APPLICATION_ROOT = /home/ctfd/app/CTFd
