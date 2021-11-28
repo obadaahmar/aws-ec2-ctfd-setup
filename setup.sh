@@ -106,6 +106,9 @@ EOF
 	sudo ln -s python3 python
 	logger -s "new: `ls -al python`"
 	logger -s "python version: `python --version`"
+	
+	#/usr/sbin/httpd -X -e debug
+
 }
 
 # Root commands - post service account, configure and start apache
