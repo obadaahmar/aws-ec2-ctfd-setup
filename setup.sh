@@ -12,19 +12,30 @@ function headline_logger () {
 function root_pre() {
     SVC=${1}
 	headline_logger -s "Start ${0} installation as `whoami`"
-	
-	
+
+	#sudo yum install httpd-devel -y         # so, we need httpd-devel
 	
 	# Steps to run as root prior to main
 	headline_logger -s "Installing Apache"
 	sudo yum install httpd -y
 	
-	headline_logger -s "Installing mod_wsgi"
+	#headline_logger -s "Installing mod_wsgi"
 	#sudo yum install mod_wsgi -y           # No good, this is for python 2
 	#sudo yum install python3-mod_wsgi -y   # No good, this is mod_wsgi v 3.4, we want 4.x
-	
-	sudo yum install httpd-devel -y         # so, we need httpd-devel
-    sudo pip3 install mod-wsgi              # and we'll compile it outselves
+	 
+	#
+
+    #sudo pip3 install mod-wsgi              # and we'll compile it ourselves
+	headline_logger -s "Installing Developer Tools"
+	sudo yum groupinstall "Development Tools" -y
+	curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
+	tar -xzvf mod_wsgi-4.9.0.tar.gz
+    cd mod_wsgi-4.9.0
+	./configure
+	make
+	make install
+	# python setup.py install
+
 
 	# Git is already installed, else how did we get here? Well, just in case...
 	headline_logger -s "Installing git"
