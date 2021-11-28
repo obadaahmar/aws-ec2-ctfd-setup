@@ -59,21 +59,23 @@ y
 y
 EOF
 
-    headline_logger -s "Install redis"
+    headline_logger -s "Enable redis6"
     sudo amazon-linux-extras enable redis6
     sudo yum clean metadata
+	
+	headline_logger -s "Installing redis"
 	sudo yum install redis -y
 	
 	CONFIG=/etc/redis/redis.conf
 	# Need to provide a config
-    # TODO: /etc/redis/redis.conf
+    #  /etc/redis/redis.conf
 	# https://raw.githubusercontent.com/redis/redis/6.2/redis.conf
 	# 
 	# Default config is 
 	#   bind 127.0.0.1 -::1
 	#   protected-mode yes
 	#   port 6379
-	# We'll use an ACL file to specify users
+	# This is fine, but we'll use an ACL file to specify users
 	
 	logger -s "Update the Redis config file $CONFIG: configure REDIS to use ACL file"
 	# Uncomment the aclfile entry
@@ -109,7 +111,7 @@ function root_post() {
 
 
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
-    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=5 home=/home/${SVC}/app/CTFd
+    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=50 home=/home/${SVC}/app/CTFd
     WSGIProcessGroup ${SVC}
 
 
@@ -142,13 +144,12 @@ EOF
 function main() {
     headline_logger -s "Start ${0} installation as `whoami`"
     SVC=${1}
+	
     # permit Apache to read from Service Account when running as root
 	logger -s "Ensure httpd can read from Service Account"
 	chmod og+rx ${HOME}
 
-
-	# get CTFd from GitHub
-    
+	# get CTFd from GitHub   
 	export APPDIR=${HOME}/app
 	export TARGET="https://github.com/CTFd/CTFd.git"
 	mkdir -p ${APPDIR}
