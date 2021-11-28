@@ -154,6 +154,8 @@ function root_post() {
 
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
     WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd
+	# WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd queue-timeout=45 socket-timeout=60 connect-timeout=15 request-timeout=60 inactivity-timeout=0 startup-timeout=15 deadlock-timeout=60 graceful-timeout=15 eviction-timeout=0 restart-interval=0 shutdown-timeout=5 maximum-requests=0
+
     WSGIProcessGroup ${SVC}
 
 
