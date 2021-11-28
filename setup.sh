@@ -43,13 +43,13 @@ function root_pre() {
 	headline_logger -s "Installing mod wsgi 4.x"
 	curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
 	tar -xzvf mod_wsgi-4.9.0.tar.gz
-	alias python=python3                           # we'd like this compiled against python3 thanks
+	
     cd mod_wsgi-4.9.0
-	./configure --with-python=/bin/python3
+	./configure --with-python=/bin/python3         # we'd like this compiled against python3 thanks 
 	make
 	sudo make install
 	
-	alias python=python2                           # but this breaks yum, so we need to reset
+	
 
     # Apache needs to load mod_wsgi.so in order to run python wsgi
 	logger -s "Add mod_wsgi.so to the Apache config"
