@@ -21,9 +21,11 @@ function root_pre() {
 	sudo yum install httpd-devel -y
 
 	headline_logger -s "Installing mod_wsgi"
-	#sudo yum install mod_wsgi -y
-	#sudo yum install python3-mod_wsgi -y
-    sudo pip3 install mod-wsgi
+	#sudo yum install mod_wsgi -y           # No good, this is for python 2
+	#sudo yum install python3-mod_wsgi -y   # No good, this is mod_wsgi v 3.4, we want 4.x
+	
+	sudo yum install httpd-devel -y         # so, we need httpd-devel
+    sudo pip3 install mod-wsgi              # and we'll compile it outselves
 
 	# Git is already installed, else how did we get here? Well, just in case...
 	headline_logger -s "Installing git"
