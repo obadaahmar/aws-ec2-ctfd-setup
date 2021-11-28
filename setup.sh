@@ -12,6 +12,9 @@ function headline_logger () {
 function root_pre() {
     SVC=${1}
 	headline_logger -s "Start ${0} installation as `whoami`"
+	
+	
+	
 	# Steps to run as root prior to main
 	headline_logger -s "Installing Apache"
 	sudo yum install httpd -y
@@ -89,6 +92,11 @@ EOF
 	sudo systemctl enable redis	
 	logger -s "Start redis service"
     sudo systemctl start redis
+	
+	
+	headline_logger -s "Configuring this host to use python 3.7"
+	sudo alternatives --set python /usr/bin/python3.7
+
 }
 
 # Root commands - post service account, configure and start apache
@@ -137,7 +145,7 @@ EOF
 	logger -s "Start httpd service"
 	sudo systemctl start httpd
 	
-
+  
 }
 
 # SVC commands - run as unpriv user, install main application
@@ -165,8 +173,9 @@ function main() {
 	#head -c 64 /dev/urandom > .ctfd_secret_key
     
 	logger -s "Update python modules used by CTFd"
+	
 	# Update the Python Modules
-	pip3 install -r requirements.txt
+	pip install -r requirements.txt
 
 
     # Write the .wsgi file than gets executed when you hit the website
@@ -206,10 +215,10 @@ EOF
 	sed -i "s|# APPLICATION_ROOT =| APPLICATION_ROOT = / |g" $CONFIG
 
 	headline_logger -s "Check the DB is available"
-	python3 ping.py
+	python ping.py
 
 	headline_logger -s "Initialise the DB"
-	python3 manage.py db upgrade
+	python manage.py db upgrade
 	
 }
 
