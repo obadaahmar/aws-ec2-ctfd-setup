@@ -94,18 +94,18 @@ EOF
     sudo systemctl start redis
 	
 	
-	headline_logger -s "Configuring this host to use python 3.7"
-	sudo alternatives --set python /usr/bin/python3.7
+#	headline_logger -s "Configuring this host to use python 3.7"
+#	sudo alternatives --set python /usr/bin/python3.7
 	# doesn't work so well
-	logger -s "python version: `python --version`"
+#	logger -s "python version: `python --version`"
     
 	# the hard way
-	cd /usr/bin
-	logger -s "old: `ls -al python`"
-	sudo rm -f python
-	sudo ln -s python3 python
-	logger -s "new: `ls -al python`"
-	logger -s "python version: `python --version`"
+#	cd /usr/bin
+#	logger -s "old: `ls -al python`"
+#	sudo rm -f python
+#	sudo ln -s python3 python
+#	logger -s "new: `ls -al python`"
+#	logger -s "python version: `python --version`"
 	
 	#/usr/sbin/httpd -X -e debug
 
