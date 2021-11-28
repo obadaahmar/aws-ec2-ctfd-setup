@@ -111,7 +111,7 @@ function root_post() {
 
 
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
-    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} threads=10 home=/home/${SVC}/app/CTFd
+    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd
     WSGIProcessGroup ${SVC}
 
 
@@ -160,9 +160,9 @@ function main() {
 	# Create a random key
 	logger -s "Randomise a key"
 	cd CTFd
-	logger -s "pwd=`pwd`"
-	logger -s "Create .ctfd_secret_key in `pwd`"
-	head -c 64 /dev/urandom > .ctfd_secret_key
+	#logger -s "pwd=`pwd`"
+	#logger -s "Create .ctfd_secret_key in `pwd`"
+	#head -c 64 /dev/urandom > .ctfd_secret_key
     
 	logger -s "Update python modules used by CTFd"
 	# Update the Python Modules
@@ -172,7 +172,7 @@ function main() {
     # Write the .wsgi file than gets executed when you hit the website
 	# Include /usr/local/bin ( why? )
 	logger -s "Configure ctfd.wsgi"
-	cat <<EOF > ${APPDIR}/ctf.wsgi
+	cat <<EOF > ${APPDIR}/CTFd/ctf.wsgi
 import sys
 sys.path.insert(0, '/usr/local/bin')
 sys.path.insert(0, '${APPDIR}/CTFd')
@@ -186,6 +186,12 @@ EOF
     logger -s "Update the CTFd config file"
     # Update the config file
 	CONFIG=${APPDIR}/CTFd/CTFd/config.ini
+
+
+	# Define the Secret Key	
+
+	logger -s "Update the CTFd config file $CONFIG: configure APPLICATION_ROOT"
+	sed -i "s|# SECRET_KEY =|# SECRET_KEY = $SVC$SVC123 / |g" $CONFIG
 	
 	# Define the Database String	
 	logger -s "Update the CTFd config file $CONFIG: configure DB"
@@ -199,11 +205,11 @@ EOF
 	# APPLICATION_ROOT = /home/ctfd/app/CTFd
 	logger -s "Update the CTFd config file $CONFIG: configure APPLICATION_ROOT"
 	sed -i "s|# APPLICATION_ROOT =|# APPLICATION_ROOT = / |g" $CONFIG
-	
 
-	
-	
-	logger -s "Initialise the DB"
+	headline_logger -s "Check the DB is available"
+	python3 ping.py
+
+	headline_logger -s "Initialise the DB"
 	python3 manage.py db upgrade
 	
 }
