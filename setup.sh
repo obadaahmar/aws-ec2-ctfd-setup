@@ -218,8 +218,8 @@ EOF
 	sed -i "s|DATABASE_URL =|DATABASE_URL = mysql+pymysql://root:secret$SVC@localhost/ctfd|g" $CONFIG
 	
 	# Define the Cache Server String	
-	logger -s "Update the CTFd config file $CONFIG: configure REDIS"
-	sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
+#	logger -s "Update the CTFd config file $CONFIG: configure REDIS"
+#	sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
 	
 	# Define the Application root	
 	# APPLICATION_ROOT = /home/ctfd/app/CTFd
