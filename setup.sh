@@ -190,8 +190,8 @@ EOF
 
 	# Define the Secret Key	
 
-	logger -s "Update the CTFd config file $CONFIG: configure APPLICATION_ROOT"
-	sed -i "s|# SECRET_KEY =|# SECRET_KEY = $SVC$SVC123 / |g" $CONFIG
+	logger -s "Update the CTFd config file $CONFIG: configure SECRET_KEY"
+	sed -i "s|# SECRET_KEY =|SECRET_KEY = ${SVC}s3cr3t${SVC}123|g" $CONFIG
 	
 	# Define the Database String	
 	logger -s "Update the CTFd config file $CONFIG: configure DB"
@@ -204,7 +204,7 @@ EOF
 	# Define the Application root	
 	# APPLICATION_ROOT = /home/ctfd/app/CTFd
 	logger -s "Update the CTFd config file $CONFIG: configure APPLICATION_ROOT"
-	sed -i "s|# APPLICATION_ROOT =|# APPLICATION_ROOT = / |g" $CONFIG
+	sed -i "s|# APPLICATION_ROOT =| APPLICATION_ROOT = / |g" $CONFIG
 
 	headline_logger -s "Check the DB is available"
 	python3 ping.py
