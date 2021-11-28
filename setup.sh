@@ -107,7 +107,7 @@ function root_post() {
 <VirtualHost *:80>
     ServerName ctfd.wonkie.cloud
     ServerAlias www.myserver.com
-    DocumentRoot /home/${SVC}/app/CTFd
+    DocumentRoot /home/${SVC}/app
 
 
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
@@ -172,9 +172,8 @@ function main() {
     # Write the .wsgi file than gets executed when you hit the website
 	# Include /usr/local/bin ( why? )
 	logger -s "Configure ctfd.wsgi"
-	cat <<EOF > ${APPDIR}/CTFd/ctf.wsgi
+	cat <<EOF > ${APPDIR}/ctf.wsgi
 import sys
-sys.path.insert(0, '/usr/local/bin')
 sys.path.insert(0, '${APPDIR}/CTFd')
 
 from CTFd import create_app
