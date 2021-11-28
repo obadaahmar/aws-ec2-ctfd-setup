@@ -18,7 +18,7 @@ function root_pre() {
 	# Steps to run as root prior to main
 	headline_logger -s "Installing Apache"
 	sudo yum install httpd -y
-	#sudo yum install httpd-devel -y         # so, we need httpd-devel
+	
 	
 	#headline_logger -s "Installing mod_wsgi"
 	#sudo yum install mod_wsgi -y           # No good, this is for python 2
@@ -27,6 +27,10 @@ function root_pre() {
 	# Do it the hard way: https://pypi.org/project/mod-wsgi/
 	headline_logger -s "Installing Developer Tools"
 	sudo yum groupinstall "Development Tools" -y
+	
+	#headline_logger -s "Installing Apache Devel"
+	#sudo yum install httpd-devel -y         # so, we need httpd-devel
+	
 	headline_logger -s "Installing mod wsgi 4.x"
 	curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
 	tar -xzvf mod_wsgi-4.9.0.tar.gz
