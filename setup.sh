@@ -24,14 +24,14 @@ function root_pre() {
 	#
 	#################################################################################################
 	
-	# Steps to run as root prior to main
+
 	headline_logger -s "Installing Apache"
 	sudo yum install httpd -y
 	
 	
 	#headline_logger -s "Installing mod_wsgi"
 	#sudo yum install mod_wsgi -y                  # No good, this is for python 2
-	#sudo yum install python3-mod_wsgi -y          # No good, this is mod_wsgi v 3.4, we want 4.x
+	#sudo yum install python3-mod_wsgi -y          # No good, this is mod_wsgi v3.4, we want v4.x
 
 	# Do it the hard way: https://pypi.org/project/mod-wsgi/
 	headline_logger -s "Installing Developer Tools"
@@ -45,9 +45,11 @@ function root_pre() {
 	tar -xzvf mod_wsgi-4.9.0.tar.gz
 	alias python=python3                           # we'd like this compiled against python3 thanks
     cd mod_wsgi-4.9.0
-	./configure
+	./configure --with-python=/bin/python3
 	make
 	sudo make install
+	
+	alias python=python2                           # but this breaks yum, so we need to reset
 
     # Apache needs to load mod_wsgi.so in order to run python wsgi
 	logger -s "Add mod_wsgi.so to the Apache config"
