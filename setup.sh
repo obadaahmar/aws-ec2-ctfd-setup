@@ -27,9 +27,11 @@ function root_pre() {
 	sudo amazon-linux-extras enable mariadb10.5
 	sudo yum clean metadata
 	
-	logger -s "Installing mysql (mariadb)"
+	logger -s "Installing mysql (MariaDB)"
 	sudo yum install mariadb -y
+	logger -s "Enable MariaDB as a service"
 	sudo systemctl enable mariadb
+	logger -s "Enable MariaDB as a service"
     sudo systemctl start mariadb
 	
 	echo "mysql version: `mysql --version`"
