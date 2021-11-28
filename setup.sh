@@ -1,20 +1,28 @@
 #!/usr/bin/bash
 
-
+# Wrapper for logger to provide some
+function headling_logger () {
+  MSG=$2
+  echo "******************************************************************************************"
+  /bin/logger -s ${2}
+  echo "******************************************************************************************"
+}
 
 
 function root_pre() {
     SVC=${1}
+	headline_logger -s "Start ${0} installation as `whoami`"
 	# Steps to run as root prior to main
-	logger -s "Installing Apache"
+	headline_logger -s "Installing Apache"
 	sudo yum install httpd -y
 
-	logger -s "Installing mod_wsgi"
+	headline_logger -s "Installing mod_wsgi"
 	#sudo yum install mod_wsgi -y
 	sudo yum install python3-mod_wsgi -y
 
 
 	# Git is already installed, else how did we get here? Well, just in case...
+	headline_logger -s "Installing git"
 	sudo yum install git -y
 
     # Apache needs to load mod_wsgi.so in order to run python wsgi
@@ -24,14 +32,15 @@ function root_pre() {
 	# we want to use mariadb10.5 so we need to enable it
 	# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-install-extras-library-software/
 	# sudo yum install -y amazon-linux-extras
+	headline_logger -s "Enable MariaDB v10.5"
 	sudo amazon-linux-extras enable mariadb10.5
 	sudo yum clean metadata
 	
-	logger -s "Installing mysql (MariaDB)"
+	headline_logger -s "Installing mysql (MariaDB)"
 	sudo yum install mariadb -y
 	logger -s "Enable MariaDB as a service"
 	sudo systemctl enable mariadb
-	logger -s "Enable MariaDB as a service"
+	logger -s "Start MariaDB service"
     sudo systemctl start mariadb
 	
 	echo "mysql version: `mysql --version`"
@@ -50,7 +59,7 @@ y
 y
 EOF
 
-    logger -s "Install redis"
+    headline_logger -s "Install redis"
     sudo amazon-linux-extras enable redis6
     sudo yum clean metadata
 	sudo yum install redis -y
@@ -70,21 +79,19 @@ EOF
 	# Uncomment the aclfile entry
 	sed -i "s|# aclfile /etc/redis/users.acl|aclfile /etc/redis/users.acl|g" $CONFIG
 	# Genreate a redis.acl file, include use ctfd, permission for all, password as defined
-	cat <<EOF > /etc/redis/users.aclfile
-
+	cat <<EOF > /etc/redis/users.acl
 user ctfd on +@all -DEBUG ~* >secret$SVC
 EOF
 
 	logger -s "Enable redis as a service"
-	sudo systemctl enable redis
-	
+	sudo systemctl enable redis	
 	logger -s "Start redis service"
     sudo systemctl start redis
 }
 
 function root_post() {
-
     SVC=${1}
+	headline_logger -s "Start ${0} installation as `whoami`"
 	# Steps to run as root after main
 	#dummy homepage
 	APACHE_LOG_DIR=/var/log/httpd
@@ -124,7 +131,6 @@ EOF
 	
 	logger -s "Enable httpd as a service"
 	sudo systemctl enable httpd
-
 	logger -s "Start httpd service"
 	sudo systemctl start httpd
 	
@@ -133,6 +139,7 @@ EOF
 
 
 function main() {
+    headline_logger -s "Start ${0} installation as `whoami`"
     SVC=${1}
     # permit Apache to read from Service Account when running as root
 	logger -s "Ensure httpd can read from Service Account"
@@ -140,12 +147,12 @@ function main() {
 
 
 	# get CTFd from GitHub
-    logger -s "Fetch CTFd from https://github.com/CTFd/CTFd.git"
+    
 	export APPDIR=${HOME}/app
 	export TARGET="https://github.com/CTFd/CTFd.git"
 	mkdir -p ${APPDIR}
 	cd ${APPDIR}
-	logger -s "Clone CTFd from ${TARGET}, save into ${APPDIR}"
+	headline_logger -s "Clone CTFd from ${TARGET}, save into ${APPDIR}"
 	git clone $TARGET
 
 	# Create a random key
@@ -192,7 +199,7 @@ EOF
 }
 
 SVC=${2:-ctfd}
-logger -s "setup.sh: $1 $2 (SVC=${SVC})"
+headline_logger -s "setup.sh: $1 $2 (SVC=${SVC})"
 case $1 in
 	"pre"*)
 		root_pre $SVC
@@ -207,5 +214,5 @@ case $1 in
 		main
 		;;
 esac
-logger -s "setup.sh: done"
+headline_logger -s "setup.sh: done"
 echo "Done"
