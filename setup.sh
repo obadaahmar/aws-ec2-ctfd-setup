@@ -40,6 +40,8 @@ function root_pre() {
 	headline_logger -s "Installing Apache Devel"   # We'll need axps (Apache Extension Tool) etc ...
 	sudo yum install httpd-devel -y                # so, we need httpd-devel
 	
+	sudo yum install python3-devel.x86_64 -y       # and python-devel 
+	
 	headline_logger -s "Installing mod wsgi 4.x"
 	curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
 	tar -xzvf mod_wsgi-4.9.0.tar.gz
@@ -178,6 +180,14 @@ EOF
 	sudo systemctl start httpd
 	
   
+  
+    # Shouldn't leave ggc & dev tools lying around
+	headline_logger -s "Uninstalling Developer Tools"
+	sudo yum groupuninstall "Development Tools" -y   # We need gcc etc ...
+	
+	headline_logger -s "Uninstalling Apache Devel"   # We'll need axps (Apache Extension Tool) etc ...
+	sudo yum uninstall httpd-devel -y                # so, we need httpd-devel
+	
 }
 
 # SVC commands - run as unpriv user, install main application
