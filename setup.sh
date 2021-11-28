@@ -73,7 +73,11 @@ EOF
 user ctfd on +@all -DEBUG ~* >secret$SVC
 EOF
 
-
+	logger -s "Enable redis as a service"
+	sudo systemctl enable redis
+	
+	logger -s "Start redis service"
+    sudo systemctl start redis
 }
 
 function root_post() {
@@ -114,11 +118,7 @@ function root_post() {
 </VirtualHost>
 
 EOF
-	logger -s "Enable redis as a service"
-	sudo systemctl enable redis
-	
-	logger -s "Start redis service"
-    sudo systemctl start redis
+
 	
 	logger -s "Enable httpd as a service"
 	sudo systemctl enable httpd
