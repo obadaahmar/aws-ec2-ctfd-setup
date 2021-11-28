@@ -3,19 +3,26 @@
 # Wrapper for logger to provide some highlight
 function headline_logger () {
   MSG=$2
-  echo "******************************************************************************************"
+  echo "*********************************************************************************************"
   /bin/logger -s ${2}
-  echo "******************************************************************************************"
+  echo "*********************************************************************************************"
 }
 
 # Root commands - pre service account, fetch packages, configure DB & Caching Server
 function root_pre() {
     SVC=${1}
 	headline_logger -s "Start ${0} installation as `whoami`"
+	logger -s "pwd=`pwd`"
 
 	# Git is already installed, else how did we get here? Well, just in case...
 	headline_logger -s "Installing git"
 	sudo yum install git -y
+	
+	#################################################################################################
+	#
+	#  WEB BROWSER - APACHE 2.4
+	#
+	#################################################################################################
 	
 	# Steps to run as root prior to main
 	headline_logger -s "Installing Apache"
@@ -36,20 +43,23 @@ function root_pre() {
 	headline_logger -s "Installing mod wsgi 4.x"
 	curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
 	tar -xzvf mod_wsgi-4.9.0.tar.gz
+	alias python=python3
     cd mod_wsgi-4.9.0
 	./configure
 	make
 	make install
 
-
-
-
-
     # Apache needs to load mod_wsgi.so in order to run python wsgi
 	logger -s "Add mod_wsgi.so to the Apache config"
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf.d/wsgi.conf
 	
-	# we want to use mariadb10.5 so we need to enable it
+	################################################################################################
+	#
+	#  DATABASE - MARIADB
+	#
+	################################################################################################
+	
+	# we want to use mariadb10.5 so we need to enable it first as AWS ECS library has v5.x by default
 	# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-install-extras-library-software/
 	# sudo yum install -y amazon-linux-extras
 	headline_logger -s "Enable MariaDB v10.5"
@@ -79,6 +89,12 @@ y
 y
 EOF
 
+	################################################################################################
+	#
+	#  CACHE - REDIS
+	#
+	################################################################################################
+
     headline_logger -s "Enable redis6"
     sudo amazon-linux-extras enable redis6
     sudo yum clean metadata
@@ -100,7 +116,7 @@ EOF
 	logger -s "Update the Redis config file $CONFIG: configure REDIS to use ACL file"
 	# Uncomment the aclfile entry
 	sed -i "s|# aclfile /etc/redis/users.acl|aclfile /etc/redis/users.acl|g" $CONFIG
-	# Genreate a redis.acl file, include use ctfd, permission for all, password as defined
+	# Generate a redis.acl file, include use ctfd, permission for all, password as defined
 	cat <<EOF > /etc/redis/users.acl
 user ctfd on +@all -DEBUG ~* >secret$SVC
 EOF
@@ -110,21 +126,6 @@ EOF
 	logger -s "Start redis service"
     sudo systemctl start redis
 	
-	
-#	headline_logger -s "Configuring this host to use python 3.7"
-#	sudo alternatives --set python /usr/bin/python3.7
-	# doesn't work so well
-#	logger -s "python version: `python --version`"
-    
-	# the hard way
-#	cd /usr/bin
-#	logger -s "old: `ls -al python`"
-#	sudo rm -f python
-#	sudo ln -s python3 python
-#	logger -s "new: `ls -al python`"
-#	logger -s "python version: `python --version`"
-	
-	#/usr/sbin/httpd -X -e debug
 
 }
 
