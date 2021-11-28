@@ -18,11 +18,12 @@ function root_pre() {
 	# Steps to run as root prior to main
 	headline_logger -s "Installing Apache"
 	sudo yum install httpd -y
+	sudo yum install httpd-devel -y
 
 	headline_logger -s "Installing mod_wsgi"
 	#sudo yum install mod_wsgi -y
-	sudo yum install python3-mod_wsgi -y
-
+	#sudo yum install python3-mod_wsgi -y
+    sudo pip3 install mod-wsgi
 
 	# Git is already installed, else how did we get here? Well, just in case...
 	headline_logger -s "Installing git"
