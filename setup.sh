@@ -96,7 +96,16 @@ EOF
 	
 	headline_logger -s "Configuring this host to use python 3.7"
 	sudo alternatives --set python /usr/bin/python3.7
-
+	# doesn't work so well
+	logger -s "python version: `python --version`"
+    
+	# the hard way
+	cd /usr/bin
+	logger -s "old: `ls -al python`"
+	sudo rm -f python
+	sudo ln -s python3 python
+	logger -s "new: `ls -al python`"
+	logger -s "python version: `python --version`"
 }
 
 # Root commands - post service account, configure and start apache
@@ -175,7 +184,7 @@ function main() {
 	logger -s "Update python modules used by CTFd"
 	
 	# Update the Python Modules
-	pip install -r requirements.txt
+	pip3 install -r requirements.txt
 
 
     # Write the .wsgi file than gets executed when you hit the website
@@ -215,10 +224,10 @@ EOF
 	sed -i "s|# APPLICATION_ROOT =| APPLICATION_ROOT = / |g" $CONFIG
 
 	headline_logger -s "Check the DB is available"
-	python ping.py
+	python3 ping.py
 
 	headline_logger -s "Initialise the DB"
-	python manage.py db upgrade
+	python3 manage.py db upgrade
 	
 }
 
