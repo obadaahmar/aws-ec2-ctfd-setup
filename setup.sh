@@ -63,6 +63,11 @@ function root_pre() {
 	#
 	################################################################################################
 	
+	# NOTES - it's possible that the DB isn't initialised properly
+	
+	# see vagrantinstall script
+	
+	
 	# we want to use mariadb10.5 so we need to enable it first as AWS ECS library has v5.x by default
 	# https://aws.amazon.com/premiumsupport/knowledge-center/ec2-install-extras-library-software/
 	# sudo yum install -y amazon-linux-extras
