@@ -51,11 +51,25 @@ function root_pre() {
 	make
 	sudo make install
 
+  #check diskspace
+  echo "Disk space:`df -k`"
 
+  # Shouldn't leave ggc & dev tools lying around - plus it recovers some disk space
+  headline_logger -s "Uninstalling Developer Tools"
+  sudo yum erase "Development Tools" -y
 
+  headline_logger -s "Uninstalling Apache Devel"
+  sudo yum erase httpd-devel -y
+
+  # we could nuke the install package for redis as well
+  echo "Disk space:`df -k`"
+
+  
     # Apache needs to load mod_wsgi.so in order to run python wsgi
 	logger -s "Add mod_wsgi.so to the Apache config"
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf.d/wsgi.conf
+
+
 
 	################################################################################################
 	#
@@ -136,6 +150,7 @@ EOF
     sudo systemctl start redis
 
 
+
 }
 
 # Root commands - post service account, configure and start apache
@@ -188,12 +203,7 @@ EOF
 
 
 
-    # Shouldn't leave ggc & dev tools lying around
-	headline_logger -s "Uninstalling Developer Tools"
-	sudo yum erase "Development Tools" -y
 
-	headline_logger -s "Uninstalling Apache Devel"
-	sudo yum erase httpd-devel -y
 
 }
 
