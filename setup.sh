@@ -10,9 +10,16 @@ function headline_logger () {
 
 # Root commands - pre service account, fetch packages, configure DB & Caching Server
 function root_pre() {
-    SVC=${1}
+  SVC=${1}
 	headline_logger -s "Start ${0} installation as `whoami`"
 	logger -s "pwd=`pwd`"
+
+  # Disable SELinux
+  CONFIG=/etc/selinux/config
+  logger -s "Update the SELinux config file $CONFIG: configure SELINUX=permissive"
+	sed -i "s|SELINUX=enforcing|SELINUX=permissive|g" $CONFIG
+  # Disable immediately
+  setenforce 0
 
 	# Git is already installed, else how did we get here? Well, just in case...
 	headline_logger -s "Installing git"
@@ -64,7 +71,7 @@ function root_pre() {
   # we could nuke the install package for redis as well
   echo "Disk space:`df -k`"
 
-  
+
     # Apache needs to load mod_wsgi.so in order to run python wsgi
 	logger -s "Add mod_wsgi.so to the Apache config"
 	sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf.d/wsgi.conf
@@ -168,27 +175,29 @@ function root_post() {
 	cat <<EOF > /etc/httpd/conf.d/ctfd.conf
 <VirtualHost *:80>
     ServerName ctfd.wonkie.cloud
-    ServerAlias www.myserver.com
+  #  ServerAlias www.myserver.com
     DocumentRoot /home/${SVC}/app
 
-
+    WSGIScriptAlias /hello /home/${SVC}/app/hello.wsgi
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
     WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd
 	# WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd queue-timeout=45 socket-timeout=60 connect-timeout=15 request-timeout=60 inactivity-timeout=0 startup-timeout=15 deadlock-timeout=60 graceful-timeout=15 eviction-timeout=0 restart-interval=0 shutdown-timeout=5 maximum-requests=0
 
     WSGIProcessGroup ${SVC}
 
-
     ErrorLog ${APACHE_LOG_DIR}/error_log
     CustomLog ${APACHE_LOG_DIR}/access_log combined
 
 
+# https://modwsgi.readthedocs.io/en/master/user-guides/configuration-guidelines.html
     <Directory /home/${SVC}/app>
-        Order allow,deny
-        Allow from all
-		Options Indexes MultiViews
-        AllowOverride None
-        Require all granted
+        <IfVersion < 2.4>
+            Order allow,deny
+            Allow from all
+        </IfVersion>
+        <IfVersion >= 2.4>
+            Require all granted
+        </IfVersion>
     </Directory>
 
 </VirtualHost>
@@ -200,7 +209,6 @@ EOF
 	sudo systemctl enable httpd
 	logger -s "Start httpd service"
 	sudo systemctl start httpd
-
 
 
 
@@ -249,6 +257,19 @@ application = create_app()
 
 
 EOF
+  # Drop a test in also
+
+  cat <<EOF > ${APPDIR}/hello.wsgi
+def application(environ, start_response):
+    status = '200 OK'
+    output = b'Hello World!'
+
+    response_headers = [('Content-type', 'text/plain'),
+                        ('Content-Length', str(len(output)))]
+    start_response(status, response_headers)
+
+    return [output]
+EOF
 
     logger -s "Update the CTFd config file"
     # Update the config file
@@ -278,6 +299,9 @@ EOF
 
 	headline_logger -s "Initialise the DB"
 	python3 manage.py db upgrade
+
+
+
 
 }
 
