@@ -53,7 +53,7 @@ function root_pre() {
   curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
   tar -xzvf mod_wsgi-4.9.0.tar.gz
 
-    cd mod_wsgi-4.9.0
+  cd mod_wsgi-4.9.0
   ./configure --with-python=/bin/python3         # we'd like this compiled against python3 thanks
   make
   sudo make install
@@ -101,13 +101,13 @@ function root_pre() {
   logger -s "Enable MariaDB as a service"
   sudo systemctl enable mariadb
   logger -s "Start MariaDB service"
-    sudo systemctl start mariadb
+  sudo systemctl start mariadb
 
   echo "mysql version: `mysql --version`"
-    logger -s "Setup and secure Mysql/MariaDB"
+  logger -s "Setup and secure Mysql/MariaDB"
 
   #NB: MariaDB 10 has an extra Yes needed before the password change (remove one if you're using v5.5)
-    sudo mysql_secure_installation <<EOF
+  sudo mysql_secure_installation <<EOF
 
 y
 y
@@ -125,9 +125,9 @@ EOF
   #
   ################################################################################################
 
-    headline_logger -s "Enable redis6"
-    sudo amazon-linux-extras enable redis6
-    sudo yum clean metadata
+  headline_logger -s "Enable redis6"
+  sudo amazon-linux-extras enable redis6
+  sudo yum clean metadata
 
   headline_logger -s "Installing redis"
   sudo yum install redis -y
@@ -154,7 +154,7 @@ EOF
   logger -s "Enable redis as a service"
   sudo systemctl enable redis
   logger -s "Start redis service"
-    sudo systemctl start redis
+  sudo systemctl start redis
 
 
 
@@ -162,14 +162,14 @@ EOF
 
 # Root commands - post service account, configure and start apache
 function root_post() {
-    SVC=${1}
+  SVC=${1}
   headline_logger -s "Start ${0} installation as `whoami`"
   # Steps to run as root after main
   #dummy homepage
   APACHE_LOG_DIR=/var/log/httpd
   echo "<html><body><div>If everything works, you shouldn't see this</div></body></html>" > /var/www/html/index.html
 
-    # Write the virtual host to run this site (port 80 - dodgy)
+  # Write the virtual host to run this site (port 80 - dodgy)
   logger -s "Write /etc/httpd/conf.d/ctfd.conf"
 
   cat <<EOF > /etc/httpd/conf.d/ctfd.conf
@@ -204,7 +204,6 @@ function root_post() {
             Require all granted
         </IfVersion>
     </Directory>
-
 </VirtualHost>
 
 EOF
@@ -215,17 +214,14 @@ EOF
   logger -s "Start httpd service"
   sudo systemctl start httpd
 
-
-
-
 }
 
 # SVC commands - run as unpriv user, install main application
 function main() {
-    headline_logger -s "Start ${0} installation as `whoami`"
-    SVC=${1}
+  headline_logger -s "Start ${0} installation as `whoami`"
+  SVC=${1}
 
-    # permit Apache to read from Service Account when running as root
+  # permit Apache to read from Service Account when running as root
   logger -s "Ensure httpd can read from Service Account"
   chmod og+rx ${HOME}
 
@@ -250,7 +246,7 @@ function main() {
   pip3 install -r requirements.txt
 
 
-    # Write the .wsgi file than gets executed when you hit the website
+  # Write the .wsgi file than gets executed when you hit the website
   # Include /usr/local/bin ( why? )
   logger -s "Configure ctfd.wsgi"
   cat <<EOF > ${APPDIR}/ctf.wsgi
@@ -276,8 +272,8 @@ def application(environ, start_response):
     return [output]
 EOF
 
-    logger -s "Update the CTFd config file"
-    # Update the config file
+  logger -s "Update the CTFd config file"
+  # Update the config file
   CONFIG=${APPDIR}/CTFd/CTFd/config.ini
 
 
