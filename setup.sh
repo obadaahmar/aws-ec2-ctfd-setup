@@ -175,14 +175,19 @@ function root_post() {
 	cat <<EOF > /etc/httpd/conf.d/ctfd.conf
 <VirtualHost *:80>
     ServerName ctfd.wonkie.cloud
-  #  ServerAlias www.myserver.com
+
     DocumentRoot /home/${SVC}/app
 
     WSGIScriptAlias /hello /home/${SVC}/app/hello.wsgi
     WSGIScriptAlias / /home/${SVC}/app/ctf.wsgi
-    WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd
-	# WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd queue-timeout=45 socket-timeout=60 connect-timeout=15 request-timeout=60 inactivity-timeout=0 startup-timeout=15 deadlock-timeout=60 graceful-timeout=15 eviction-timeout=0 restart-interval=0 shutdown-timeout=5 maximum-requests=0
+    #WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd
 
+	  WSGIDaemonProcess ${SVC} user=${SVC} group=${SVC} processes=5 threads=15 home=/home/${SVC}/app/CTFd queue-timeout=45 socket-timeout=60 connect-timeout=15 request-timeout=60 inactivity-timeout=0 startup-timeout=15 deadlock-timeout=60 graceful-timeout=15 eviction-timeout=0 restart-interval=0 shutdown-timeout=5 maximum-requests=0
+
+# https://serverfault.com/questions/844761/wsgi-truncated-or-oversized-response-headers-received-from-daemon-process
+# mod_wsgi - some python C extensions are non thread-safe -- WSGIApplicationGroup %{GLOBAL} -- is the fix
+# https://modwsgi.readthedocs.io/en/develop/configuration-directives/WSGIApplicationGroup.html
+    WSGIApplicationGroup %{GLOBAL}
     WSGIProcessGroup ${SVC}
 
     ErrorLog ${APACHE_LOG_DIR}/error_log
@@ -287,7 +292,7 @@ EOF
 
 	# Define the Cache Server String
 	logger -s "Update the CTFd config file $CONFIG: configure REDIS"
-	#sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
+	sed -i "s|REDIS_URL =|REDIS_URL = redis://ctfd:secret$SVC@localhost:6379|g" $CONFIG
 
 	# Define the Application root
 	# APPLICATION_ROOT = /home/ctfd/app/CTFd
