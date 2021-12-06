@@ -1,4 +1,9 @@
 #!/usr/bin/bash
+#
+# aws-ecw-ctfd-setup
+#
+# build a CTFd instance for capture the flag competitions
+#
 
 # Wrapper for logger to provide some highlight
 function headline_logger () {
