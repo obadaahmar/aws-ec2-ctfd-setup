@@ -238,6 +238,16 @@ EOF
   # Reload the context
   restorecon -R -v /home/ctfd
 
+  # Thanks to:
+  # https://wiki.gentoo.org/wiki/SELinux/Tutorials/How_SELinux_controls_file_and_directory_accesses
+  # https://serverfault.com/questions/964755/getting-compiled-python-mod-wsgi-module-working-on-apache-server-with-selinux-en
+  # https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/6/html/managing_confined_services/sect-managing_confined_services-the_apache_http_server-types
+  # https://bugzilla.redhat.com/show_bug.cgi?id=182346
+  # and the fine manuals,...
+  # https://man7.org/linux/man-pages/man8/semanage-fcontext.8.html
+  #
+  # Obviously, you can also turn off selinux (setenforce 0)
+
 }
 
 # SVC commands - run as unpriv user, install main application
