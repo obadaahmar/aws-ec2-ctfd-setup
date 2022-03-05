@@ -232,6 +232,8 @@ EOF
   semanage fcontext -a -t httpd_sys_content_t "/home/ctfd(/.*)?"
   # Add the shared object (.so) libraries which need to execute
   semanage fcontext -a -t httpd_exec_t "/home/ctfd/.local/.*\.so(\..*)?"
+  # Allow uploads
+  semanage fcontext -a -t httpd_sys_rw_content_t "/home/ctfd/app/CTFd/CTFd/uploads(/.*)?"
   # Add connection to MariaDB
   # to avoid: avc:  denied  { name_connect } for  pid=21536 comm="httpd" dest=3306 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:mysqld_port_t:s0 tclass=tcp_socket permissive=0
   setsebool -P httpd_can_network_connect_db=1 httpd_can_network_connect=1
