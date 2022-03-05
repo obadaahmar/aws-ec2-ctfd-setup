@@ -22,7 +22,8 @@ function root_pre() {
   # Disable SELinux
   CONFIG=/etc/selinux/config
   logger -s "Update the SELinux config file $CONFIG: configure SELINUX=permissive"
-  sed -i "s|SELINUX=enforcing|SELINUX=permissive|g" $CONFIG
+  #sed -i "s|SELINUX=enforcing|SELINUX=permissive|g" $CONFIG
+  sed -i "s|SELINUX=enforcing|SELINUX=disabled|g" $CONFIG
   # Disable immediately
   setenforce 0
 
