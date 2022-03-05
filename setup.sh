@@ -19,13 +19,19 @@ function root_pre() {
   headline_logger -s "Start ${0} installation as `whoami`"
   logger -s "pwd=`pwd`"
 
-  # Disable SELinux
+  # Disable SELinux to do the install
   CONFIG=/etc/selinux/config
   logger -s "Update the SELinux config file $CONFIG: configure SELINUX=permissive"
   sed -i "s|SELINUX=enforcing|SELINUX=permissive|g" $CONFIG
   #sed -i "s|SELINUX=enforcing|SELINUX=disabled|g" $CONFIG
   # Disable immediately
   setenforce 0
+
+  # Install semanage to grant the permissions at the end of the build
+  headline_logger -s "Installing semanage"
+  sudo yum install /usr/sbin/semanage -y
+
+
 
   # Git is already installed, else how did we get here? Well, just in case...
   headline_logger -s "Installing git"
@@ -219,6 +225,18 @@ EOF
   sudo systemctl enable httpd
   logger -s "Start httpd service"
   sudo systemctl start httpd
+
+
+  headline_logger "SELinux Add context for Website"
+  # Add all the files under /home/ctfd
+  semanage fcontext -a -t httpd_sys_content_t "/home/ctfd(/.*)?"
+  # Add the shared object (.so) libraries which need to execute
+  semanage fcontext -a -t httpd_exec_t "/home/ctfd/.local/.*\.so(\..*)?"
+  # Add connection to MariaDB
+  # to avoid: avc:  denied  { name_connect } for  pid=21536 comm="httpd" dest=3306 scontext=system_u:system_r:httpd_t:s0 tcontext=system_u:object_r:mysqld_port_t:s0 tclass=tcp_socket permissive=0
+  setsebool -P httpd_can_network_connect_db=1 httpd_can_network_connect=1
+  # Reload the context
+  restorecon -R -v /home/ctfd
 
 }
 
