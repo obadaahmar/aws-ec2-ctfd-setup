@@ -47,11 +47,6 @@ function root_pre() {
   headline_logger -s "Installing Apache"
   sudo yum install httpd -y
 
-
-  #headline_logger -s "Installing mod_wsgi"
-  #sudo yum install mod_wsgi -y                  # No good, this is for python 2
-  #sudo yum install python3-mod_wsgi -y          # No good, this is mod_wsgi v3.4, we want v4.x
-
   # Do it the hard way: https://pypi.org/project/mod-wsgi/
   headline_logger -s "Installing Developer Tools"
   sudo yum groupinstall "Development Tools" -y   # We need gcc etc ...
@@ -61,11 +56,11 @@ function root_pre() {
   headline_logger -s "Installing Python Devel"
   sudo yum install python3-devel.x86_64 -y       # and python-devel
 
-  headline_logger -s "Installing mod wsgi 4.x"
-  curl https://files.pythonhosted.org/packages/b6/54/4359de02da3581ea4a17340d87fd2c5a47adc4c8e626f9809e2697b2d33f/mod_wsgi-4.9.0.tar.gz --output mod_wsgi-4.9.0.tar.gz
-  tar -xzvf mod_wsgi-4.9.0.tar.gz
+  headline_logger -s "Installing mod wsgi 5.0.0"
+  curl https://github.com/GrahamDumpleton/mod_wsgi/archive/refs/tags/5.0.0.tar.gz --output mod_wsgi-5.0.0.tar.gz
+  tar -xzvf mod_wsgi-5.0.0.tar.gz
 
-  cd mod_wsgi-4.9.0
+  cd mod_wsgi-5.0.0
   ./configure --with-python=/bin/python3         # we'd like this compiled against python3 thanks
   make
   sudo make install
@@ -83,12 +78,9 @@ function root_pre() {
   # we could nuke the install package for redis as well
   echo "Disk space:`df -k`"
 
-
     # Apache needs to load mod_wsgi.so in order to run python wsgi
   logger -s "Add mod_wsgi.so to the Apache config"
   sudo echo "LoadModule wsgi_module modules/mod_wsgi.so" >> /etc/httpd/conf.d/wsgi.conf
-
-
 
   ################################################################################################
   #
