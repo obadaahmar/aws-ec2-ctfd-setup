@@ -57,10 +57,10 @@ function root_pre() {
   sudo yum install python3.10 python3.10-devel -y     # changed python version
 
   headline_logger -s "Installing mod wsgi 5.0.0"
-  curl https://github.com/GrahamDumpleton/mod_wsgi/archive/refs/tags/5.0.0.tar.gz --output mod_wsgi-5.0.0.tar.gz
-  tar -xzvf mod_wsgi-5.0.0.tar.gz
+  curl https://files.pythonhosted.org/packages/e9/02/36597a3e2478e20ec55432dd153fd23067d2dc5ec736ae16ccc08905f8cb/mod_wsgi-5.0.1.tar.gz --output mod_wsgi-5.0.1.tar.gz
+  tar -xzvf mod_wsgi-5.0.1.tar.gz
 
-  cd mod_wsgi-5.0.0
+  cd mod_wsgi-5.0.1
   ./configure --with-python=/bin/python3         # we'd like this compiled against python3 thanks
   make
   sudo make install
