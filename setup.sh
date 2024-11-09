@@ -54,7 +54,7 @@ function root_pre() {
   headline_logger -s "Installing Apache Devel"   # We'll need axps (Apache Extension Tool) etc ...
   sudo yum install httpd-devel -y                # so, we need httpd-devel
   headline_logger -s "Installing Python Devel"
-  sudo yum install python3-devel.x86_64 -y       # and python-devel
+  sudo yum install python3.10 python3.10-devel -y     # changed python version
 
   headline_logger -s "Installing mod wsgi 5.0.0"
   curl https://github.com/GrahamDumpleton/mod_wsgi/archive/refs/tags/5.0.0.tar.gz --output mod_wsgi-5.0.0.tar.gz
