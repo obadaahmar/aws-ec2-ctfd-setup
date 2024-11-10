@@ -1,1 +1,2 @@
 # aws-ec2-ctfd-setup
+This is a shell script to be executed after the creation of an EC2 Instance in AWS to automate the installation of CTFd docker container, the installation of themes, the importing of previous settings, and the launching of the container.
